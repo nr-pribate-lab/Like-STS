@@ -1,14 +1,15 @@
 (() => {
-const { character, cards, enemies, stages } = window.GameContent;
+const { characters, enemies, stages } = window.GameContent;
 
-function createRun(random = Math.random) {
-  const stage = stages["ash-corridor"];
-  const enemy = enemies[stage.enemyId];
+function createRun(enemyId = "enemy_ash_warden", random = Math.random) {
+  const character = characters["character_ash_swordsman"];
+  const stage = stages["stage_ash_corridor"];
+  const enemy = enemies[enemyId];
   const deck = shuffle([...character.startingDeck], random);
   const state = {
     character, stage, enemyDefinition: enemy,
     player: { hp: character.maxHp, maxHp: character.maxHp, block: 0 },
-    enemy: { hp: enemy.maxHp, maxHp: enemy.maxHp, block: 0 },
+    enemy: { name: enemy.name, hp: enemy.maxHp, maxHp: enemy.maxHp, block: 0 },
     drawPile: deck, hand: [], discardPile: [], energy: character.startingEnergy,
     turn: 1, phase: "player", outcome: "ongoing", log: "灰守りが道を塞いでいる。手札から行動を選ぼう。",
     random,
@@ -20,22 +21,43 @@ function createRun(random = Math.random) {
 function playCard(state, handIndex) {
   if (state.phase !== "player" || state.outcome !== "ongoing") return state;
   const cardId = state.hand[handIndex];
-  const card = cards[cardId];
+  const card = state.character.cards[cardId];
   if (!card || state.energy < card.cost) return state;
+  const effectHandlers = window.GameContentEffects || {};
+  const missingEffect = card.effects.find((effect) => typeof effectHandlers[effect.type] !== "function");
+  if (missingEffect) {
+    state.log = `未登録のカード効果です: ${missingEffect.type}`;
+    return state;
+  }
   state.energy -= card.cost;
   state.hand.splice(handIndex, 1);
-  if (card.damage) {
-    const damage = Math.max(0, card.damage - state.enemy.block);
-    state.enemy.block = Math.max(0, state.enemy.block - card.damage);
-    state.enemy.hp = Math.max(0, state.enemy.hp - damage);
-    state.log = `${card.name}！ 灰守りに ${damage} ダメージ。`;
+  const effectLogs = [];
+  const targets = getTargets(state, card.target);
+  for (const effect of card.effects) {
+    const result = effectHandlers[effect.type](
+      { state, card, targets, random: state.random },
+      effect,
+    );
+    if (result) effectLogs.push(result);
   }
+  state.log = effectLogs.length ? `${card.name}！ ${effectLogs.join("。")}。` : `${card.name}を使用した。`;
   state.discardPile.push(cardId);
   if (state.enemy.hp <= 0) {
     state.outcome = "victory";
     state.log = "灰守りを打ち倒した。回廊に静寂が戻る。";
   }
   return state;
+}
+
+function getTargets(state, targetType) {
+  if (targetType === "self") return [state.player];
+  if (targetType === "none") return [];
+  if (targetType === "all_enemies") return state.enemies || [state.enemy];
+  if (targetType === "enemy") {
+    const enemies = state.enemies || [state.enemy];
+    return [enemies[state.selectedTargetIndex || 0]].filter(Boolean);
+  }
+  return [];
 }
 
 function endTurn(state) {
@@ -54,9 +76,9 @@ function endTurn(state) {
     return state;
   }
   state.turn += 1;
-  state.energy = character.startingEnergy;
+  state.energy = state.character.startingEnergy;
   state.phase = "player";
-  drawCards(state, character.handSize);
+  drawCards(state, state.character.handSize);
   state.log = `ターン ${state.turn}。灰守りは攻撃の構えを崩さない。`;
   return state;
 }

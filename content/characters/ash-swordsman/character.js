@@ -1,13 +1,12 @@
 window.GameContent = window.GameContent || {};
 window.GameContent.characters = window.GameContent.characters || {};
-window.GameContent.characters["ash-swordsman"] = {
-  id: "ash-swordsman",
+window.GameContent.characters["character_ash_swordsman"] = {
+  id: "character_ash_swordsman",
   name: "灰路の剣士",
+  description: "灰に閉ざされた塔へ挑む剣士。",
   maxHp: 50,
   startingEnergy: 3,
   handSize: 5,
-  startingDeck: Array(5).fill("ash-slash"),
+  startingDeck: Array(5).fill("card_ash_slash"),
+  cards: {},
 };
-
-// The current MVP still exposes one active character through the existing combat UI.
-window.GameContent.character = window.GameContent.characters["ash-swordsman"];

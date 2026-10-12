@@ -6,7 +6,10 @@
 characters/<character-id>/
   character.js
   cards/
-    <card-id>.js
+    <card-id>/
+      <card-id>.js
+      assets/              そのカード専用の画像など
+  assets/                  そのキャラクター共通の画像など
 ```
 
-カードは `window.GameContent.cards["<card-id>"]` に登録します。コンテンツ定義は利用者が編集できるリポジトリ側で管理します。
+カードは所属キャラクター定義の `cards` に登録します。たとえば `window.GameContent.characters["character_ash_swordsman"].cards["card_ash_slash"]` のように、キャラクターごとに名前空間を分けます。カードの素材はカード専用フォルダの `assets/` に置き、キャラクター共通の素材はキャラクターフォルダ直下の `assets/` に置きます。新しいカードファイルは `content/manifest.js` の該当キャラクターの `cards` 一覧にも登録してください。

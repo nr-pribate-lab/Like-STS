@@ -6,17 +6,13 @@
   <meta name="theme-color" content="#101315">
   <meta name="description" content="灰の塔を一歩ずつ進む、カードバトルの小さな試作ゲーム。">
   <title>灰の塔 — 一歩目</title>
-  <link rel="stylesheet" href="styles.css?v=6">
-  <link rel="stylesheet" href="screens.css?v=1">
-  <script defer src="content/shared/relics/registry.js?v=7"></script>
-  <script defer src="content/shared/enemies/ash-warden.js?v=7"></script>
-  <script defer src="content/shared/stages/ash-corridor.js?v=7"></script>
-  <script defer src="content/characters/ash-swordsman/character.js?v=7"></script>
-  <script defer src="content/characters/ash-swordsman/cards/ash-slash.js?v=7"></script>
-  <script defer src="game-core/combat.js?v=7"></script>
-  <script defer src="src/main.js?v=7"></script>
+  <link rel="stylesheet" href="styles.css?v=7">
+  <link rel="stylesheet" href="screens.css?v=3">
+  <script defer src="content/manifest.js?v=10"></script>
+  <script defer src="src/boot.js?v=10"></script>
 </head>
 <body>
+  <div id="boot-error" class="boot-error" role="alert" hidden></div>
   <main class="game-shell">
     <header class="topbar">
       <a class="brand" id="brand-home" href="#" aria-label="灰の塔 ホーム"><span class="brand-mark">灰</span><span>灰の塔</span></a>
@@ -61,6 +57,23 @@
         </div>
       </div>
       <button class="primary-button adventure-start" id="begin-adventure">冒険を始める <span>→</span></button>
+    </section>
+
+    <section class="game-screen map-screen" id="map-screen" aria-labelledby="map-title">
+      <p class="screen-kicker">DUNGEON MAP</p>
+      <h1 id="map-title">灰の回廊</h1>
+      <p class="screen-description">地点のアイコンを選んで進もう。</p>
+      <aside class="map-legend" aria-label="マップの凡例">
+        <strong>凡例</strong>
+        <span><i>⚔</i>通常戦闘</span>
+        <span><i>♛</i>強敵・ボス</span>
+        <span><i>?</i>イベント</span>
+        <span><i>⌂</i>休息</span>
+        <span><i>◇</i>ショップ</span>
+        <span><i>◌</i>交流</span>
+      </aside>
+      <div class="map-track" id="map-track" aria-label="ダンジョンの進行マップ"></div>
+      <p class="map-note" id="map-note" aria-live="polite"></p>
     </section>
 
     <section class="game-screen placeholder-screen" id="upgrade-screen" aria-labelledby="upgrade-title">
@@ -124,6 +137,7 @@
     <footer class="footer"><span>灰の塔 <span class="footer-dot">·</span> プロトタイプ 01</span><span>一手ずつ、頂へ。</span></footer>
   </main>
   <dialog id="message-dialog" class="message-dialog"><div class="dialog-mark" id="dialog-mark">✦</div><p class="dialog-eyebrow" id="dialog-eyebrow">戦闘終了</p><h2 id="dialog-title"></h2><p id="dialog-copy"></p><button class="primary-button" id="dialog-action">もう一度挑戦</button></dialog>
+  <dialog id="map-node-dialog" class="message-dialog"><div class="dialog-mark">◇</div><p class="dialog-eyebrow" id="map-dialog-eyebrow">DUNGEON</p><h2 id="map-dialog-title"></h2><p id="map-dialog-copy"></p><button class="primary-button" id="map-dialog-action">次の地点へ</button></dialog>
   <dialog id="help-dialog" class="message-dialog help-dialog"><button class="dialog-close" id="help-close" aria-label="閉じる">×</button><p class="dialog-eyebrow">HOW TO PLAY</p><h2>遊び方</h2><p>毎ターン、エネルギーを使ってカードをプレイします。敵の予告を見ながら攻撃し、敵の反撃に備えましょう。</p><ul><li>「斬撃」は1エネルギーで敵に6ダメージ。</li><li>ターン終了時、敵は予告した攻撃を行います。</li><li>HPが0になる前に敵を倒せば勝利です。</li></ul><button class="primary-button" id="help-done">戦闘に戻る</button></dialog>
 </body>
 </html>

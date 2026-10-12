@@ -24,6 +24,8 @@
 ```text
 content/
   shared/
+    effects/            カードなどから呼び出す共通効果スクリプト
+    map-nodes/          ステージから参照する地点定義
     stages/             ステージ定義
     enemies/            共通の敵定義
     relics/             共通のレリック定義
@@ -33,13 +35,15 @@ content/
       cards/            このキャラクター専用のカード定義
 game-core/              戦闘とゲームルール
 src/main.js             画面遷移とUI
+src/boot.js             マニフェストに基づくコンテンツ読み込み
+content/manifest.js     コンテンツファイル一覧
 index.html              画面構造
 styles.css              戦闘画面の表示
 screens.css             タイトル、町、冒険準備画面
 build.ps1               コアとコンテンツを配信用に組み立てる
 ```
 
-カード定義はキャラクター固有なので、各キャラクターの `cards/` に置きます。ステージ、敵、レリックは `content/shared/` 以下の共通コンテンツとして管理します。コンテンツ追加時は `index.html` にその定義ファイルの `<script>` を追加します。
+コンテンツ定義はJavaScriptで記述します。カード定義はキャラクター固有なので、各キャラクターの `cards/` に置き、`GameContent.characters[characterId].cards[cardId]` に登録します。ステージ、地点、敵、レリック、共通効果スクリプトは `content/shared/` 以下で管理します。ステージは地点IDを配列で参照し、地点は敵IDなどを参照します。起動時にID参照を検証し、参照先がなければ起動エラーを表示します。現在のマップは一本道で、地点を円形アイコン、右上に凡例として表示します。最後の最終ボス戦は未実装です。新しい効果は `window.GameContentEffects[effectId]` に関数を登録し、`content/manifest.js` の `shared.effects` に追加します。カードの効果配列はゲームコアが順番に呼び出します。詳細は `content/shared/effects/README.md` を参照してください。
 
 `build.ps1` を実行して `dist/` を作成します。プロジェクトのチェックアウトだけでビルドできます。
 
@@ -51,6 +55,7 @@ build.ps1               コアとコンテンツを配信用に組み立てる
 dist/index.html
 dist/styles.css
 dist/screens.css
+dist/src/boot.js
 dist/src/main.js
 dist/game-core/combat.js
 dist/content/shared/...
