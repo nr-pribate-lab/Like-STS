@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101315">
+  <meta name="description" content="灰の塔を一歩ずつ進む、カードバトルの小さな試作ゲーム。">
+  <title>灰の塔 — 一歩目</title>
+  <link rel="stylesheet" href="styles.css?v=6">
+  <link rel="stylesheet" href="screens.css?v=1">
+  <script defer src="content/shared/relics/registry.js?v=7"></script>
+  <script defer src="content/shared/enemies/ash-warden.js?v=7"></script>
+  <script defer src="content/shared/stages/ash-corridor.js?v=7"></script>
+  <script defer src="content/characters/ash-swordsman/character.js?v=7"></script>
+  <script defer src="content/characters/ash-swordsman/cards/ash-slash.js?v=7"></script>
+  <script defer src="game-core/combat.js?v=7"></script>
+  <script defer src="src/main.js?v=7"></script>
+</head>
+<body>
+  <main class="game-shell">
+    <header class="topbar">
+      <a class="brand" id="brand-home" href="#" aria-label="灰の塔 ホーム"><span class="brand-mark">灰</span><span>灰の塔</span></a>
+      <div class="run-label" id="run-label" hidden><span class="live-dot"></span>第一層 <span class="divider">/</span> 入口の番人</div>
+      <button class="icon-button" id="help-button" aria-label="遊び方" hidden>？</button>
+    </header>
+
+    <section class="game-screen title-screen is-active" id="title-screen" aria-labelledby="game-title">
+      <div class="title-emblem" aria-hidden="true"><span></span><b>灰</b></div>
+      <p class="screen-kicker">A CARD ADVENTURE</p>
+      <h1 id="game-title">灰の塔</h1>
+      <p class="title-copy">灰に閉ざされた世界で、<br>あなたの旅が始まる。</p>
+      <button class="primary-button title-start" id="start-game">旅を始める <span>→</span></button>
+      <p class="title-footnote">小さな冒険の、最初の一歩。</p>
+    </section>
+
+    <section class="game-screen town-screen" id="town-screen" aria-labelledby="town-title">
+      <div class="town-landscape" aria-hidden="true"><span class="town-moon"></span><i class="town-tower"></i><i class="town-roof roof-one"></i><i class="town-roof roof-two"></i><i class="town-lamp"></i></div>
+      <div class="town-content">
+        <p class="screen-kicker">灰路の宿場</p>
+        <h1 id="town-title">旅人たちの町</h1>
+        <p class="screen-description">塔へ向かう前に、次の行き先を選ぼう。</p>
+        <div class="town-menu">
+          <button class="town-option adventure-option" id="town-adventure"><span class="option-icon">↗</span><span class="option-text"><strong>冒険</strong><small>ダンジョンへ出発する</small></span><span class="option-arrow">→</span></button>
+          <button class="town-option" id="town-upgrade"><span class="option-icon">⚒</span><span class="option-text"><strong>強化</strong><small>装備や力を整える</small></span><span class="option-arrow">→</span></button>
+          <button class="town-option" id="town-social"><span class="option-icon">◌</span><span class="option-text"><strong>交流</strong><small>町の人々と話す</small></span><span class="option-arrow">→</span></button>
+        </div>
+      </div>
+    </section>
+
+    <section class="game-screen adventure-screen" id="adventure-screen" aria-labelledby="adventure-title">
+      <button class="text-back" data-go="town-screen">← 町へ戻る</button>
+      <p class="screen-kicker">冒険の準備</p>
+      <h1 id="adventure-title">行き先を選ぶ</h1>
+      <p class="screen-description">ダンジョンと旅人を選んで、出発しよう。</p>
+      <div class="adventure-choices">
+        <div class="choice-group"><h2><span>01</span> ダンジョン</h2>
+          <button class="choice-card is-selected" id="select-dungeon" aria-pressed="true"><span class="choice-art dungeon-art"><i></i><b></b></span><span class="choice-copy"><strong>灰の回廊</strong><small>第一層 · 推奨レベル 1</small></span><span class="choice-check">✓</span></button>
+        </div>
+        <div class="choice-group"><h2><span>02</span> キャラクター</h2>
+          <button class="choice-card is-selected" id="select-character" aria-pressed="true"><span class="choice-art character-art"><i></i><b></b></span><span class="choice-copy"><strong>灰路の剣士</strong><small>HP 50 · 剣で戦う旅人</small></span><span class="choice-check">✓</span></button>
+        </div>
+      </div>
+      <button class="primary-button adventure-start" id="begin-adventure">冒険を始める <span>→</span></button>
+    </section>
+
+    <section class="game-screen placeholder-screen" id="upgrade-screen" aria-labelledby="upgrade-title">
+      <button class="text-back" data-go="town-screen">← 町へ戻る</button>
+      <div class="placeholder-symbol">⚒</div><p class="screen-kicker">町の鍛冶場</p><h1 id="upgrade-title">強化</h1>
+      <p class="screen-description">装備や能力を強化する場所です。<br>この機能は準備中です。</p>
+      <button class="secondary-button" data-go="town-screen">町のメニューへ</button>
+    </section>
+
+    <section class="game-screen placeholder-screen" id="social-screen" aria-labelledby="social-title">
+      <button class="text-back" data-go="town-screen">← 町へ戻る</button>
+      <div class="placeholder-symbol">◌</div><p class="screen-kicker">町の広場</p><h1 id="social-title">交流</h1>
+      <p class="screen-description">町の人々と会話する場所です。<br>この機能は準備中です。</p>
+      <button class="secondary-button" data-go="town-screen">町のメニューへ</button>
+    </section>
+
+    <section class="game-screen combat-screen" id="combat-screen" aria-label="戦闘">
+    <section class="arena" aria-label="戦闘">
+      <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
+      <div class="arena-caption"><span>STAGE 01</span><span class="caption-line"></span><span>灰の回廊</span></div>
+      <div class="enemy-side">
+        <div class="enemy-intent" id="enemy-intent"></div>
+        <div class="enemy-art" id="enemy-art" aria-hidden="true">
+          <div class="enemy-halo"></div><div class="enemy-shadow"></div>
+          <div class="enemy-cloak"></div><div class="enemy-body"></div>
+          <div class="enemy-head"></div><div class="enemy-hood"></div>
+          <div class="enemy-eye eye-left"></div><div class="enemy-eye eye-right"></div>
+          <div class="enemy-blade"></div>
+        </div>
+        <div class="enemy-info">
+          <div class="entity-name"><span class="entity-type">通常敵</span><h2 id="enemy-name">灰守り</h2></div>
+          <div class="health-row"><span class="health-label">HP</span><div class="health-track"><div class="health-fill enemy-health" id="enemy-health"></div></div><span class="health-value" id="enemy-hp">30 / 30</span></div>
+          <div class="enemy-status" id="enemy-status">古びた刃を構えている</div>
+        </div>
+      </div>
+      <div class="battle-separator"><span>VS</span></div>
+      <div class="player-side">
+        <div class="player-art" aria-hidden="true"><div class="player-shadow"></div><div class="player-cape"></div><div class="player-body"></div><div class="player-head"></div><div class="player-hair"></div><div class="player-sword"></div></div>
+        <div class="player-info">
+          <div class="entity-name"><span class="entity-type">旅人</span><h2>灰路の剣士</h2></div>
+          <div class="health-row"><span class="health-label">HP</span><div class="health-track"><div class="health-fill player-health" id="player-health"></div></div><span class="health-value" id="player-hp">50 / 50</span></div>
+          <div class="player-stats"><span>🛡 <b id="block-value">0</b></span><span class="stat-separator">·</span><span>次の一撃を待つ</span></div>
+        </div>
+      </div>
+      <div class="turn-banner" id="turn-banner" aria-live="polite"></div>
+    </section>
+
+    <section class="battle-controls" aria-label="ターン情報">
+      <div class="pile pile-draw"><span class="pile-count" id="draw-count">5</span><span class="pile-label">山札</span><span class="pile-icon">▤</span></div>
+      <div class="combat-log" id="combat-log" aria-live="polite">灰守りが道を塞いでいる。手札から行動を選ぼう。</div>
+      <div class="energy-box"><span class="energy-orb"><span id="energy-value">3</span></span><span class="energy-label">エネルギー</span></div>
+      <div class="pile pile-discard"><span class="pile-count" id="discard-count">0</span><span class="pile-label">捨て札</span><span class="pile-icon">▤</span></div>
+    </section>
+
+    <section class="hand-area" aria-label="手札">
+      <div class="hand-heading"><span>あなたの手札</span><span class="hand-hint">カードを選んで使用</span></div>
+      <div class="hand" id="hand"></div>
+      <div class="end-turn-wrap"><button class="end-turn-button" id="end-turn">ターン終了 <span>→</span></button></div>
+    </section>
+    </section>
+    <footer class="footer"><span>灰の塔 <span class="footer-dot">·</span> プロトタイプ 01</span><span>一手ずつ、頂へ。</span></footer>
+  </main>
+  <dialog id="message-dialog" class="message-dialog"><div class="dialog-mark" id="dialog-mark">✦</div><p class="dialog-eyebrow" id="dialog-eyebrow">戦闘終了</p><h2 id="dialog-title"></h2><p id="dialog-copy"></p><button class="primary-button" id="dialog-action">もう一度挑戦</button></dialog>
+  <dialog id="help-dialog" class="message-dialog help-dialog"><button class="dialog-close" id="help-close" aria-label="閉じる">×</button><p class="dialog-eyebrow">HOW TO PLAY</p><h2>遊び方</h2><p>毎ターン、エネルギーを使ってカードをプレイします。敵の予告を見ながら攻撃し、敵の反撃に備えましょう。</p><ul><li>「斬撃」は1エネルギーで敵に6ダメージ。</li><li>ターン終了時、敵は予告した攻撃を行います。</li><li>HPが0になる前に敵を倒せば勝利です。</li></ul><button class="primary-button" id="help-done">戦闘に戻る</button></dialog>
+</body>
+</html>
