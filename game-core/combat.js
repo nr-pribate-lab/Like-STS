@@ -1,21 +1,38 @@
 (() => {
 const { characters, enemies, stages } = window.GameContent;
 
-function createRun(enemyId = "enemy_ash_warden", random = Math.random) {
+function createRun(enemyId = "enemy_ash_warden", random = Math.random, relicIds = []) {
+  if (!Array.isArray(relicIds) || new Set(relicIds).size !== relicIds.length) {
+    throw new Error("所持レリックIDは重複のない配列で指定してください。");
+  }
+  for (const relicId of relicIds) {
+    if (!window.GameContent.relics?.[relicId]) {
+      throw new Error(`存在しないレリックIDです: ${relicId}`);
+    }
+  }
   const character = characters["character_ash_swordsman"];
   const stage = stages["stage_ash_corridor"];
   const enemy = enemies[enemyId];
   const deck = shuffle([...character.startingDeck], random);
   const state = {
     character, stage, enemyDefinition: enemy,
-    player: { hp: character.maxHp, maxHp: character.maxHp, block: 0 },
+    player: { hp: character.maxHp, maxHp: character.maxHp, block: 0, attackBonus: 0 },
     enemy: { name: enemy.name, hp: enemy.maxHp, maxHp: enemy.maxHp, block: 0 },
     drawPile: deck, hand: [], discardPile: [], energy: character.startingEnergy,
-    turn: 1, phase: "player", outcome: "ongoing", log: "灰守りが道を塞いでいる。手札から行動を選ぼう。",
+    turn: 1, phase: "player", outcome: "ongoing", relicIds: [...relicIds], log: "灰守りが道を塞いでいる。手札から行動を選ぼう。",
     random,
   };
+  triggerRelicEvent(state, "onBattleStart");
   drawCards(state, character.handSize);
   return state;
+}
+
+function triggerRelicEvent(state, eventName) {
+  const handlers = window.GameContentRelicHandlers || {};
+  for (const relicId of state.relicIds) {
+    const handler = handlers[relicId]?.[eventName];
+    if (handler) handler({ state, relic: window.GameContent.relics[relicId] });
+  }
 }
 
 function playCard(state, handIndex) {

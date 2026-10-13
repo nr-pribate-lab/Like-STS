@@ -30,8 +30,8 @@ window.GameContent.mapNodes.node_ash_shop = {
   id: "node_ash_shop",
   type: "shop",
   name: "ショップ",
-  description: "カードやレリックを購入する地点です。",
-  implemented: false,
+  description: "パワーベルトを取得できる簡易ショップです。",
+  implemented: true,
 };
 
 window.GameContent.mapNodes.node_ash_social = {

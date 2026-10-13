@@ -1,11 +1,14 @@
 window.GameContentManifest = {
-  version: "10",
+  version: "12",
   shared: {
     effects: [
       "content/shared/effects/damage.js",
     ],
     relics: [
       "content/shared/relics/registry.js",
+    ],
+    relicHandlers: [
+      "content/shared/relics/power-belt.js",
     ],
     enemies: [
       "content/shared/enemies/ash-warden.js",

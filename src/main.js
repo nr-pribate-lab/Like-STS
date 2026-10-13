@@ -18,7 +18,7 @@ const ui = {
   endTurn: $("end-turn"), message: $("message-dialog"), help: $("help-dialog"),
   mapDialog: $("map-node-dialog"),
   runLabel: $("run-label"), helpButton: $("help-button"),
-  screens: ["title-screen", "town-screen", "adventure-screen", "map-screen", "upgrade-screen", "social-screen", "combat-screen"].map($),
+  screens: ["title-screen", "town-screen", "adventure-screen", "map-screen", "shop-screen", "upgrade-screen", "social-screen", "combat-screen"].map($),
 };
 
 function showScreen(screenId) {
@@ -74,6 +74,11 @@ function renderMap() {
 }
 
 function enterMapNode(node, index) {
+  if (node.type === "shop" && node.implemented) {
+    showScreen("shop-screen");
+    return;
+  }
+
   if (node.type === "boss" && !node.implemented) {
     mapDialogMode = "endRun";
     $("map-dialog-eyebrow").textContent = "FINAL BOSS";
@@ -85,7 +90,7 @@ function enterMapNode(node, index) {
   }
 
   if (["normal_battle", "boss"].includes(node.type) && node.implemented) {
-    state = createRun(node.enemyIds[0]);
+    state = createRun(node.enemyIds[0], Math.random, mapProgress.relicIds || []);
     showScreen("combat-screen");
     return;
   }
@@ -97,6 +102,15 @@ function enterMapNode(node, index) {
   $("map-dialog-action").textContent = "次の地点へ";
   ui.mapDialog.dataset.nextIndex = String(index + 1);
   ui.mapDialog.showModal();
+}
+
+function leaveShop(shouldAcquireRelic) {
+  if (shouldAcquireRelic) {
+    const relicId = "relic_power_belt";
+    if (!mapProgress.relicIds.includes(relicId)) mapProgress.relicIds.push(relicId);
+  }
+  mapProgress.nodeIndex += 1;
+  showScreen("map-screen");
 }
 
 function render() {
@@ -177,9 +191,11 @@ $("dialog-action").addEventListener("click", () => {
     mapProgress = null;
     showScreen("title-screen");
   } else if (victory && mapProgress) {
+    mapProgress.relicIds = [];
     mapProgress.nodeIndex += 1;
     showScreen("map-screen");
   } else {
+    if (mapProgress) mapProgress.relicIds = [];
     mapProgress = null;
     showScreen("town-screen");
   }
@@ -199,9 +215,13 @@ for (const option of [$("select-dungeon"), $("select-character")]) {
 }
 $("begin-adventure").addEventListener("click", () => {
   state = null;
-  mapProgress = { stageId: mapStage.id, nodeIndex: 0 };
+  mapProgress = { stageId: mapStage.id, nodeIndex: 0, relicIds: [] };
   showScreen("map-screen");
 });
+$("shop-acquire").addEventListener("click", () => {
+  leaveShop(true);
+});
+$("shop-skip").addEventListener("click", () => leaveShop(false));
 $("map-dialog-action").addEventListener("click", () => {
   ui.mapDialog.close();
   if (mapDialogMode === "skip") {

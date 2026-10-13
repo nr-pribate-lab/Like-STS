@@ -7,9 +7,9 @@
   <meta name="description" content="灰の塔を一歩ずつ進む、カードバトルの小さな試作ゲーム。">
   <title>灰の塔 — 一歩目</title>
   <link rel="stylesheet" href="styles.css?v=7">
-  <link rel="stylesheet" href="screens.css?v=3">
-  <script defer src="content/manifest.js?v=10"></script>
-  <script defer src="src/boot.js?v=10"></script>
+  <link rel="stylesheet" href="screens.css?v=4">
+  <script defer src="content/manifest.js?v=12"></script>
+  <script defer src="src/boot.js?v=12"></script>
 </head>
 <body>
   <div id="boot-error" class="boot-error" role="alert" hidden></div>
@@ -74,6 +74,17 @@
       </aside>
       <div class="map-track" id="map-track" aria-label="ダンジョンの進行マップ"></div>
       <p class="map-note" id="map-note" aria-live="polite"></p>
+    </section>
+
+    <section class="game-screen placeholder-screen shop-screen" id="shop-screen" aria-labelledby="shop-title">
+      <div class="placeholder-symbol">◇</div><p class="screen-kicker">DUNGEON SHOP</p><h1 id="shop-title">回廊の仮設商店</h1>
+      <p class="screen-description">今回は試験用に、パワーベルトを無料で取得できます。<br>取得したレリックは次の戦闘が終わると失われます。</p>
+      <article class="shop-relic-card">
+        <span class="shop-relic-icon">✦</span>
+        <div><strong>パワーベルト</strong><p>巻くだけで強くなった気分に。筋力を+2</p></div>
+      </article>
+      <button class="primary-button shop-acquire" id="shop-acquire">パワーベルトを取得して進む <span>→</span></button>
+      <button class="secondary-button shop-skip" id="shop-skip">取得せずに進む</button>
     </section>
 
     <section class="game-screen placeholder-screen" id="upgrade-screen" aria-labelledby="upgrade-title">

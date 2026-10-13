@@ -16,6 +16,7 @@
     const files = [
       ...(shared.effects || []),
       ...(shared.relics || []),
+      ...(shared.relicHandlers || []),
       ...(shared.enemies || []),
       ...(shared.stages || []),
       ...(shared.mapNodes || []),
