@@ -6,9 +6,9 @@
   <meta name="theme-color" content="#101315">
   <meta name="description" content="灰の塔を一歩ずつ進む、カードバトルの小さな試作ゲーム。">
   <title>灰の塔 — 一歩目</title>
-  <link rel="stylesheet" href="styles.css?v=7">
-  <link rel="stylesheet" href="screens.css?v=4">
-  <script defer src="content/manifest.js?v=12"></script>
+  <link rel="stylesheet" href="styles.css?v=8">
+  <link rel="stylesheet" href="screens.css?v=11">
+  <script defer src="content/manifest.js?v=26"></script>
   <script defer src="src/boot.js?v=12"></script>
 </head>
 <body>
@@ -17,7 +17,10 @@
     <header class="topbar">
       <a class="brand" id="brand-home" href="#" aria-label="灰の塔 ホーム"><span class="brand-mark">灰</span><span>灰の塔</span></a>
       <div class="run-label" id="run-label" hidden><span class="live-dot"></span>第一層 <span class="divider">/</span> 入口の番人</div>
-      <button class="icon-button" id="help-button" aria-label="遊び方" hidden>？</button>
+      <div class="combat-actions" id="combat-actions" hidden>
+        <button class="icon-button menu-button" id="menu-button" aria-label="メニューを開く">☰</button>
+        <button class="icon-button" id="help-button" aria-label="遊び方">？</button>
+      </div>
     </header>
 
     <section class="game-screen title-screen is-active" id="title-screen" aria-labelledby="game-title">
@@ -37,10 +40,20 @@
         <p class="screen-description">塔へ向かう前に、次の行き先を選ぼう。</p>
         <div class="town-menu">
           <button class="town-option adventure-option" id="town-adventure"><span class="option-icon">↗</span><span class="option-text"><strong>冒険</strong><small>ダンジョンへ出発する</small></span><span class="option-arrow">→</span></button>
+          <button class="town-option" id="town-item-shop"><span class="option-icon">⚗</span><span class="option-text"><strong>道具屋</strong><small>アイテムを購入する · 所持金 <b id="town-gold">100$</b></small></span><span class="option-arrow">→</span></button>
           <button class="town-option" id="town-upgrade"><span class="option-icon">⚒</span><span class="option-text"><strong>強化</strong><small>装備や力を整える</small></span><span class="option-arrow">→</span></button>
           <button class="town-option" id="town-social"><span class="option-icon">◌</span><span class="option-text"><strong>交流</strong><small>町の人々と話す</small></span><span class="option-arrow">→</span></button>
         </div>
       </div>
+    </section>
+
+    <section class="game-screen placeholder-screen town-item-shop-screen" id="town-item-shop-screen" aria-labelledby="town-item-shop-title">
+      <button class="text-back" data-go="town-screen">← 町へ戻る</button>
+      <div class="placeholder-symbol">⚗</div><p class="screen-kicker">VILLAGE ITEM SHOP</p><h1 id="town-item-shop-title">道具屋</h1>
+      <p class="screen-description">冒険に持っていくアイテムを購入できます。<br>所持上限は3個です。</p>
+      <p class="shop-deck-count">所持金 <strong id="town-shop-gold">100$</strong> · アイテム <strong id="town-shop-items">0 / 3</strong></p>
+      <div id="town-item-offers" class="shop-offers"></div>
+      <button class="secondary-button shop-skip" data-go="town-screen">町へ戻る</button>
     </section>
 
     <section class="game-screen adventure-screen" id="adventure-screen" aria-labelledby="adventure-title">
@@ -53,7 +66,12 @@
           <button class="choice-card is-selected" id="select-dungeon" aria-pressed="true"><span class="choice-art dungeon-art"><i></i><b></b></span><span class="choice-copy"><strong>灰の回廊</strong><small>第一層 · 推奨レベル 1</small></span><span class="choice-check">✓</span></button>
         </div>
         <div class="choice-group"><h2><span>02</span> キャラクター</h2>
-          <button class="choice-card is-selected" id="select-character" aria-pressed="true"><span class="choice-art character-art"><i></i><b></b></span><span class="choice-copy"><strong>灰路の剣士</strong><small>HP 50 · 剣で戦う旅人</small></span><span class="choice-check">✓</span></button>
+          <button class="choice-card is-selected" id="character-select-toggle" aria-expanded="false" aria-controls="character-options">
+            <span class="choice-art character-art" id="selected-character-art"><i></i><b></b></span>
+            <span class="choice-copy"><strong id="selected-character-name">灰路の剣士</strong><small id="selected-character-description">灰に閉ざされた塔へ挑む剣士。</small></span>
+            <span class="choice-check" aria-hidden="true">⌄</span>
+          </button>
+          <div class="character-options" id="character-options" role="listbox" aria-label="キャラクターを選択" hidden></div>
         </div>
       </div>
       <button class="primary-button adventure-start" id="begin-adventure">冒険を始める <span>→</span></button>
@@ -63,6 +81,7 @@
       <p class="screen-kicker">DUNGEON MAP</p>
       <h1 id="map-title">灰の回廊</h1>
       <p class="screen-description">地点のアイコンを選んで進もう。</p>
+      <p class="shop-deck-count">所持金 <strong id="map-gold">100$</strong> · アイテム <strong id="map-items-count">0 / 3</strong></p>
       <aside class="map-legend" aria-label="マップの凡例">
         <strong>凡例</strong>
         <span><i>⚔</i>通常戦闘</span>
@@ -78,13 +97,34 @@
 
     <section class="game-screen placeholder-screen shop-screen" id="shop-screen" aria-labelledby="shop-title">
       <div class="placeholder-symbol">◇</div><p class="screen-kicker">DUNGEON SHOP</p><h1 id="shop-title">回廊の仮設商店</h1>
-      <p class="screen-description">今回は試験用に、パワーベルトを無料で取得できます。<br>取得したレリックは次の戦闘が終わると失われます。</p>
-      <article class="shop-relic-card">
-        <span class="shop-relic-icon">✦</span>
-        <div><strong>パワーベルト</strong><p>巻くだけで強くなった気分に。筋力を+2</p></div>
-      </article>
-      <button class="primary-button shop-acquire" id="shop-acquire">パワーベルトを取得して進む <span>→</span></button>
-      <button class="secondary-button shop-skip" id="shop-skip">取得せずに進む</button>
+      <p class="shop-deck-count" id="shop-deck-count">現在のデッキ：10枚</p>
+      <p class="shop-deck-count">所持金 <strong id="run-shop-gold">100$</strong></p>
+      <p class="screen-description">商品を購入すると所持品に加わります。買い物を終えたらマップへ戻ってください。</p>
+      <h2 class="shop-section-title">カード</h2><div id="shop-card-offers" class="shop-offers"></div>
+      <h2 class="shop-section-title">レリック</h2><div id="shop-relic-offers" class="shop-offers"></div>
+      <h2 class="shop-section-title">アイテム</h2><div id="shop-item-offers" class="shop-offers"></div>
+      <h2 class="shop-section-title">カード削除</h2>
+      <button class="secondary-button shop-remove-toggle" id="shop-remove-toggle" aria-expanded="false" aria-controls="shop-remove-options">カードを1枚削除 · 75$</button>
+      <div id="shop-remove-options" class="shop-offers shop-remove-options" hidden></div>
+      <button class="secondary-button shop-skip" id="shop-skip">買い物を終えてマップへ戻る →</button>
+    </section>
+
+    <section class="game-screen placeholder-screen reward-screen" id="rewards-screen" aria-labelledby="rewards-title">
+      <div class="placeholder-symbol">✦</div><p class="screen-kicker">BATTLE REWARDS</p><h1 id="rewards-title">戦闘報酬</h1>
+      <p class="screen-description">受け取る報酬を選んでください。</p>
+      <div class="reward-list">
+        <article class="reward-option"><div><strong>ゴールド</strong><p id="reward-gold-copy">所持金に加わります。</p></div><button class="secondary-button" id="claim-gold">受け取る</button></article>
+        <article class="reward-option" id="reward-item-area" hidden><div><strong>アイテム</strong><p id="reward-item-copy"></p></div><button class="secondary-button" id="claim-item">受け取る</button></article>
+        <article class="reward-option"><div><strong>カード</strong><p id="reward-card-copy">3枚の候補から1枚を選びます。</p></div><button class="secondary-button" id="open-card-reward">カードを選ぶ</button></article>
+      </div>
+      <button class="primary-button reward-continue" id="continue-after-rewards" disabled>マップへ進む →</button>
+    </section>
+
+    <section class="game-screen placeholder-screen reward-screen" id="card-reward-screen" aria-labelledby="card-reward-title">
+      <p class="screen-kicker">CARD REWARD</p><h1 id="card-reward-title">カードを選ぶ</h1>
+      <p class="screen-description">報酬としてデッキに加えるカードを1枚選んでください。</p>
+      <div class="reward-card-options" id="reward-card-options"></div>
+      <button class="secondary-button" id="skip-card-reward">カードを受け取らない</button>
     </section>
 
     <section class="game-screen placeholder-screen" id="upgrade-screen" aria-labelledby="upgrade-title">
@@ -124,9 +164,9 @@
       <div class="player-side">
         <div class="player-art" aria-hidden="true"><div class="player-shadow"></div><div class="player-cape"></div><div class="player-body"></div><div class="player-head"></div><div class="player-hair"></div><div class="player-sword"></div></div>
         <div class="player-info">
-          <div class="entity-name"><span class="entity-type">旅人</span><h2>灰路の剣士</h2></div>
+          <div class="entity-name"><span class="entity-type">旅人</span><h2 id="player-name">灰路の剣士</h2></div>
           <div class="health-row"><span class="health-label">HP</span><div class="health-track"><div class="health-fill player-health" id="player-health"></div></div><span class="health-value" id="player-hp">50 / 50</span></div>
-          <div class="player-stats"><span>🛡 <b id="block-value">0</b></span><span class="stat-separator">·</span><span>次の一撃を待つ</span></div>
+          <div class="player-stats"><span>🛡 <b id="block-value">0</b></span><span class="stat-separator">·</span><span id="bat-count" hidden></span><span id="persistent-cards" hidden></span><span id="player-status-note">次の一撃を待つ</span></div>
         </div>
       </div>
       <div class="turn-banner" id="turn-banner" aria-live="polite"></div>
@@ -150,5 +190,24 @@
   <dialog id="message-dialog" class="message-dialog"><div class="dialog-mark" id="dialog-mark">✦</div><p class="dialog-eyebrow" id="dialog-eyebrow">戦闘終了</p><h2 id="dialog-title"></h2><p id="dialog-copy"></p><button class="primary-button" id="dialog-action">もう一度挑戦</button></dialog>
   <dialog id="map-node-dialog" class="message-dialog"><div class="dialog-mark">◇</div><p class="dialog-eyebrow" id="map-dialog-eyebrow">DUNGEON</p><h2 id="map-dialog-title"></h2><p id="map-dialog-copy"></p><button class="primary-button" id="map-dialog-action">次の地点へ</button></dialog>
   <dialog id="help-dialog" class="message-dialog help-dialog"><button class="dialog-close" id="help-close" aria-label="閉じる">×</button><p class="dialog-eyebrow">HOW TO PLAY</p><h2>遊び方</h2><p>毎ターン、エネルギーを使ってカードをプレイします。敵の予告を見ながら攻撃し、敵の反撃に備えましょう。</p><ul><li>「斬撃」は1エネルギーで敵に6ダメージ。</li><li>ターン終了時、敵は予告した攻撃を行います。</li><li>HPが0になる前に敵を倒せば勝利です。</li></ul><button class="primary-button" id="help-done">戦闘に戻る</button></dialog>
+  <dialog id="run-menu-dialog" class="message-dialog run-menu-dialog">
+    <button class="dialog-close" id="menu-close" aria-label="閉じる">×</button>
+    <p class="dialog-eyebrow">RUN MENU</p><h2 id="menu-view-title">メニュー</h2>
+    <p class="menu-gold-count">所持金 <strong id="menu-gold-count">100$</strong></p>
+    <div id="menu-home" class="menu-options">
+      <button class="menu-option" data-menu-view="deck">デッキを見る <span>→</span></button>
+      <button class="menu-option" data-menu-view="relics">レリックを見る <span>→</span></button>
+      <button class="menu-option" data-menu-view="items">アイテム <small>確認・使用</small></button>
+      <button class="menu-option" data-menu-view="suspend">中断する <small>実装予定</small></button>
+      <button class="menu-option menu-option-danger" data-menu-view="abandon">あきらめる <span>→</span></button>
+    </div>
+    <div id="menu-detail" class="menu-detail" hidden>
+      <div id="menu-detail-content"></div>
+      <div class="menu-detail-actions">
+        <button class="secondary-button" id="menu-back">メニューへ戻る</button>
+        <button class="primary-button" id="menu-abandon-confirm" hidden>町へ戻る</button>
+      </div>
+    </div>
+  </dialog>
 </body>
 </html>

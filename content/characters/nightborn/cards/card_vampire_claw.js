@@ -1,0 +1,6 @@
+window.GameContent.characters["character_nightborn"].cards["card_vampire_claw"] = {
+  id: "card_vampire_claw", name: "爪撃", description: "敵1体に6ダメージを与える。",
+  type: "attack", target: "enemy", cost: 1, rarity: 0, rewardWeight: 0, shopWeight: 0,
+  effects: [{ type: "damage", amount: 6 }],
+  upgrade: { description: "敵1体に8ダメージを与える。", effects: [{ type: "damage", amount: 8 }] },
+};

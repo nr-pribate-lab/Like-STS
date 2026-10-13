@@ -7,6 +7,9 @@ window.GameContent.characters["character_ash_swordsman"] = {
   maxHp: 50,
   startingEnergy: 3,
   handSize: 5,
-  startingDeck: Array(5).fill("card_ash_slash"),
+  startingDeck: [
+    ...Array(5).fill("card_ash_slash"),
+    ...Array(5).fill("card_defense"),
+  ],
   cards: {},
 };

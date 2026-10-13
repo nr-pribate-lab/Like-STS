@@ -17,6 +17,8 @@
       ...(shared.effects || []),
       ...(shared.relics || []),
       ...(shared.relicHandlers || []),
+      ...(shared.items || []),
+      ...(shared.itemHandlers || []),
       ...(shared.enemies || []),
       ...(shared.stages || []),
       ...(shared.mapNodes || []),
@@ -47,6 +49,7 @@
       ...Object.values(nodes),
       ...Object.values(enemies),
       ...Object.values(content.relics || {}),
+      ...Object.values(content.items || {}),
       ...Object.values(characters),
       ...Object.values(characters).flatMap((character) => Object.values(character.cards || {})),
     ];

@@ -6,8 +6,8 @@ window.GameContent.characters["character_ash_swordsman"].cards["card_ash_slash"]
   target: "enemy",
   cost: 1,
   rarity: 0,
-  rewardWeight: 10,
-  shopWeight: 5,
+  rewardWeight: 0,
+  shopWeight: 0,
   effects: [
     { type: "damage", amount: 6 },
   ],

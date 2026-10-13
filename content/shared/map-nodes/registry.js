@@ -30,7 +30,7 @@ window.GameContent.mapNodes.node_ash_shop = {
   id: "node_ash_shop",
   type: "shop",
   name: "ショップ",
-  description: "パワーベルトを取得できる簡易ショップです。",
+  description: "カード、レリック、アイテムの購入やカード削除ができます。",
   implemented: true,
 };
 
