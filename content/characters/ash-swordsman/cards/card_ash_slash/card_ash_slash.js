@@ -3,6 +3,7 @@ window.GameContent.characters["character_ash_swordsman"].cards["card_ash_slash"]
   name: "斬撃",
   description: "敵1体に6ダメージを与える。",
   type: "attack",
+  tags: ["strike"],
   target: "enemy",
   cost: 1,
   rarity: 0,
@@ -13,6 +14,7 @@ window.GameContent.characters["character_ash_swordsman"].cards["card_ash_slash"]
   ],
   upgrade: {
     description: "敵1体に8ダメージを与える。",
+    tags: ["strike"],
     effects: [
       { type: "damage", amount: 8 },
     ],

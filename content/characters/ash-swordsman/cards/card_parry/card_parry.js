@@ -10,13 +10,13 @@ window.GameContent.characters["character_ash_swordsman"].cards["card_parry"] = {
   shopWeight: 4,
   effects: [
     { type: "damage", amount: 4 },
-    { type: "block", amount: 4 },
+    { type: "block", amount: 4, target: "self" },
   ],
   upgrade: {
     description: "敵1体に6ダメージを与え、5ブロックを得る。",
     effects: [
       { type: "damage", amount: 6 },
-      { type: "block", amount: 5 },
+      { type: "block", amount: 5, target: "self" },
     ],
   },
 };

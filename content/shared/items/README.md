@@ -15,3 +15,5 @@ GameCombat.createRun(enemyId, random, relicIds, startingDeck, itemIds) に所持
 活力薬（item_energy_tonic）は自分のターン中に使うと、このターンのエネルギーを1増やします。価格は30です。
 
 護りの薬（item_guarding_tonic）は自分のターン中に使うと8ブロックを得ます。価格は30です。
+
+追加の共通アイテムは、閃光弾（item_flash_bomb：全敵に10ダメージ、45$）、猛りの霊薬（item_berserker_draught：このターン筋力+3、45$）、追い風の巻物（item_draw_scroll：2枚ドロー、40$）、清めの煙（item_purifying_smoke：弱体解除、25$）、黒砂時計（item_black_sand：選択中の敵の次の行動を1回阻止、50$）、幸運の欠片（item_lucky_shard：ラン中ゴールド+15、35$）、呼び戻しの羽（item_recall_feather：捨て札からランダムに1枚手札へ戻す、35$）、砕き膏（item_shatter_paste：選択中の敵のブロックを解除、30$）です。いずれも一度使うと消費されます。

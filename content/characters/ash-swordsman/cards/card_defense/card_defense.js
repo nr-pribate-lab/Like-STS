@@ -3,6 +3,7 @@ window.GameContent.characters["character_ash_swordsman"].cards["card_defense"] =
   name: "防御",
   description: "5ブロックを得る。",
   type: "skill",
+  tags: ["defense"],
   target: "self",
   cost: 1,
   rarity: 0,
@@ -11,6 +12,7 @@ window.GameContent.characters["character_ash_swordsman"].cards["card_defense"] =
   effects: [{ type: "block", amount: 5 }],
   upgrade: {
     description: "8ブロックを得る。",
+    tags: ["defense"],
     effects: [{ type: "block", amount: 8 }],
   },
 };

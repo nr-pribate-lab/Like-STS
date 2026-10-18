@@ -5,7 +5,7 @@ window.GameContent.characters["character_nightborn"].cards["card_blood_pact"] = 
   type: "persistent",
   target: "self",
   cost: 1,
-  rarity: 1,
+  rarity: 2,
   rewardWeight: 5,
   shopWeight: 4,
   effects: [],

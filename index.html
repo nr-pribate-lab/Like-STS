@@ -7,13 +7,14 @@
   <meta name="description" content="灰の塔を一歩ずつ進む、カードバトルの小さな試作ゲーム。">
   <title>灰の塔 — 一歩目</title>
   <link rel="stylesheet" href="styles.css?v=8">
-  <link rel="stylesheet" href="screens.css?v=11">
-  <script defer src="content/manifest.js?v=26"></script>
+  <link rel="stylesheet" href="screens.css?v=18">
+  <script defer src="content/manifest.js?v=51"></script>
   <script defer src="src/boot.js?v=12"></script>
 </head>
 <body>
   <div id="boot-error" class="boot-error" role="alert" hidden></div>
   <main class="game-shell">
+    <p id="save-status" role="alert" hidden></p>
     <header class="topbar">
       <a class="brand" id="brand-home" href="#" aria-label="灰の塔 ホーム"><span class="brand-mark">灰</span><span>灰の塔</span></a>
       <div class="run-label" id="run-label" hidden><span class="live-dot"></span>第一層 <span class="divider">/</span> 入口の番人</div>
@@ -29,6 +30,8 @@
       <h1 id="game-title">灰の塔</h1>
       <p class="title-copy">灰に閉ざされた世界で、<br>あなたの旅が始まる。</p>
       <button class="primary-button title-start" id="start-game">旅を始める <span>→</span></button>
+      <button class="secondary-button" id="continue-game" hidden>冒険を再開する</button>
+      <p class="title-footnote">進行はこのブラウザに自動保存されます。別の端末・ブラウザ・公開URLには引き継がれません。サイトデータの削除で失われる場合があります。新しい冒険を始めると途中の冒険を置き換えます。</p>
       <p class="title-footnote">小さな冒険の、最初の一歩。</p>
     </section>
 
@@ -40,7 +43,7 @@
         <p class="screen-description">塔へ向かう前に、次の行き先を選ぼう。</p>
         <div class="town-menu">
           <button class="town-option adventure-option" id="town-adventure"><span class="option-icon">↗</span><span class="option-text"><strong>冒険</strong><small>ダンジョンへ出発する</small></span><span class="option-arrow">→</span></button>
-          <button class="town-option" id="town-item-shop"><span class="option-icon">⚗</span><span class="option-text"><strong>道具屋</strong><small>アイテムを購入する · 所持金 <b id="town-gold">100$</b></small></span><span class="option-arrow">→</span></button>
+          <button class="town-option" id="town-item-shop"><span class="option-icon">⚒</span><span class="option-text"><strong>道具屋</strong><small>冒険道具を購入する · 星のかけら <b id="town-gold">0個</b></small></span><span class="option-arrow">→</span></button>
           <button class="town-option" id="town-upgrade"><span class="option-icon">⚒</span><span class="option-text"><strong>強化</strong><small>装備や力を整える</small></span><span class="option-arrow">→</span></button>
           <button class="town-option" id="town-social"><span class="option-icon">◌</span><span class="option-text"><strong>交流</strong><small>町の人々と話す</small></span><span class="option-arrow">→</span></button>
         </div>
@@ -50,8 +53,8 @@
     <section class="game-screen placeholder-screen town-item-shop-screen" id="town-item-shop-screen" aria-labelledby="town-item-shop-title">
       <button class="text-back" data-go="town-screen">← 町へ戻る</button>
       <div class="placeholder-symbol">⚗</div><p class="screen-kicker">VILLAGE ITEM SHOP</p><h1 id="town-item-shop-title">道具屋</h1>
-      <p class="screen-description">冒険に持っていくアイテムを購入できます。<br>所持上限は3個です。</p>
-      <p class="shop-deck-count">所持金 <strong id="town-shop-gold">100$</strong> · アイテム <strong id="town-shop-items">0 / 3</strong></p>
+      <p class="screen-description" id="town-item-shop-copy">冒険に持っていくアイテムを購入できます。星のかけらは戦闘勝利報酬で手に入ります。<br>所持上限は3個です。</p>
+      <p class="shop-deck-count">星のかけら <strong id="town-shop-gold">0個</strong> · アイテム <strong id="town-shop-items">0 / 3</strong></p>
       <div id="town-item-offers" class="shop-offers"></div>
       <button class="secondary-button shop-skip" data-go="town-screen">町へ戻る</button>
     </section>
@@ -91,7 +94,7 @@
         <span><i>◇</i>ショップ</span>
         <span><i>◌</i>交流</span>
       </aside>
-      <div class="map-track" id="map-track" aria-label="ダンジョンの進行マップ"></div>
+      <div class="map-viewport"><div class="map-track" id="map-track" aria-label="下から上へ進む16階のダンジョンマップ"></div></div>
       <p class="map-note" id="map-note" aria-live="polite"></p>
     </section>
 
@@ -114,6 +117,8 @@
       <p class="screen-description">受け取る報酬を選んでください。</p>
       <div class="reward-list">
         <article class="reward-option"><div><strong>ゴールド</strong><p id="reward-gold-copy">所持金に加わります。</p></div><button class="secondary-button" id="claim-gold">受け取る</button></article>
+        <article class="reward-option"><div><strong>星のかけら</strong><p id="reward-town-token-copy">町の道具屋で使えます。</p></div><button class="secondary-button" id="claim-town-token">受け取る</button></article>
+        <article class="reward-option" id="reward-relic-area" hidden><div><strong>強敵のレリック</strong><p id="reward-relic-copy"></p></div><button class="secondary-button" id="claim-relic">受け取る</button></article>
         <article class="reward-option" id="reward-item-area" hidden><div><strong>アイテム</strong><p id="reward-item-copy"></p></div><button class="secondary-button" id="claim-item">受け取る</button></article>
         <article class="reward-option"><div><strong>カード</strong><p id="reward-card-copy">3枚の候補から1枚を選びます。</p></div><button class="secondary-button" id="open-card-reward">カードを選ぶ</button></article>
       </div>
@@ -127,46 +132,90 @@
       <button class="secondary-button" id="skip-card-reward">カードを受け取らない</button>
     </section>
 
-    <section class="game-screen placeholder-screen" id="upgrade-screen" aria-labelledby="upgrade-title">
+    <section class="game-screen placeholder-screen clear-screen" id="clear-screen" aria-labelledby="clear-title">
+      <div class="placeholder-symbol">✦</div><p class="screen-kicker">ADVENTURE COMPLETE</p><h1 id="clear-title">灰の回廊を踏破した</h1>
+      <p class="screen-description">灰燼の王を退け、あなたの旅は伝説となった。</p>
+      <div class="clear-record" aria-label="冒険の記録">
+        <p>冒険者 <strong id="clear-character">—</strong></p>
+        <p>最後のHP <strong id="clear-hp">—</strong></p>
+        <p>獲得したレリック <strong id="clear-relic-count">—</strong></p>
+        <p>デッキ <strong id="clear-deck-count">—</strong>枚</p>
+      </div>
+      <button class="primary-button" id="clear-return-town">町へ戻る</button>
+    </section>
+
+    <section class="game-screen placeholder-screen reward-screen" id="rest-screen" aria-labelledby="rest-title">
+      <div class="placeholder-symbol">⌂</div><p class="screen-kicker">REST SITE</p><h1 id="rest-title">休息</h1>
+      <p class="screen-description" id="rest-description">最大HPの30%を回復するか、カードを1枚強化できます。どちらか一方を選んでください。</p>
+      <div class="reward-list">
+        <article class="reward-option"><div><strong>休息する</strong><p id="rest-heal-copy">HPを回復します。</p></div><button class="secondary-button" id="rest-heal">回復する</button></article>
+        <article class="reward-option rest-upgrade-option"><div><strong>カードを強化</strong><p>強化するカードを1枚選んでください。</p><div id="rest-upgrade-options" class="rest-upgrade-options"></div></div></article>
+      </div>
+    </section>
+
+    <section class="game-screen placeholder-screen event-screen" id="event-screen" aria-labelledby="event-title">
+      <div class="placeholder-symbol">?</div><p class="screen-kicker">ENCOUNTER</p><h1 id="event-title">イベント</h1>
+      <p class="screen-description" id="event-intro"></p>
+      <div class="event-choices" id="event-choices"></div>
+      <div class="event-aftermath" id="event-aftermath" hidden>
+        <p id="event-aftermath-copy"></p>
+        <p class="event-result-copy" id="event-result-copy"></p>
+        <div class="event-card-options" id="event-card-options" hidden></div>
+        <button class="primary-button" id="event-finish">結果を受け取って先へ進む →</button>
+      </div>
+    </section>
+
+    <section class="game-screen placeholder-screen upgrade-screen" id="upgrade-screen" aria-labelledby="upgrade-title">
       <button class="text-back" data-go="town-screen">← 町へ戻る</button>
-      <div class="placeholder-symbol">⚒</div><p class="screen-kicker">町の鍛冶場</p><h1 id="upgrade-title">強化</h1>
-      <p class="screen-description">装備や能力を強化する場所です。<br>この機能は準備中です。</p>
+      <p class="screen-kicker">町の鍛冶場 · CHARACTER PROGRESSION</p><h1 id="upgrade-title">星灯りの強化樹</h1>
+      <p class="screen-description">星のかけらを捧げ、キャラクター固有のカードやレリックを解放します。解放は保存され、冒険をまたいで残ります。</p>
+      <div class="upgrade-toolbar"><div class="upgrade-currency">星のかけら <strong id="upgrade-fragments">0</strong></div><div id="upgrade-character-select" class="upgrade-character-select" aria-label="強化するキャラクター"></div></div>
+      <div id="upgrade-tree" class="upgrade-tree" aria-live="polite"></div>
       <button class="secondary-button" data-go="town-screen">町のメニューへ</button>
     </section>
 
     <section class="game-screen placeholder-screen" id="social-screen" aria-labelledby="social-title">
       <button class="text-back" data-go="town-screen">← 町へ戻る</button>
       <div class="placeholder-symbol">◌</div><p class="screen-kicker">町の広場</p><h1 id="social-title">交流</h1>
-      <p class="screen-description">町の人々と会話する場所です。<br>この機能は準備中です。</p>
+      <p class="screen-description">町の人々が旅の記録や珍しい品について語っています。</p>
+      <div class="town-menu social-menu">
+        <button class="town-option museum-entry-button" id="town-museum"><span class="option-icon">▤</span><span class="option-text"><strong>博物館</strong><small>館長と話す・収蔵品を見る</small></span><span class="option-arrow">→</span></button>
+        <button class="town-option social-person-entry" id="social-sera-shop" hidden><span class="option-icon">⚗</span><span class="option-text"><strong>セラの薬屋</strong><small>薬や霊薬を購入する</small></span><span class="option-arrow">→</span></button>
+        <button class="town-option social-person-entry" id="social-sera-talk" hidden><span class="option-icon">◌</span><span class="option-text"><strong>セラと話す</strong><small>薬屋を訪ねる</small></span><span class="option-arrow">→</span></button>
+        <button class="town-option tavern-entry-button" type="button" disabled><span class="option-icon">♨</span><span class="option-text"><strong>酒場</strong><small>未実装</small></span><span class="option-arrow">—</span></button>
+      </div>
       <button class="secondary-button" data-go="town-screen">町のメニューへ</button>
+    </section>
+
+    <section class="game-screen placeholder-screen" id="sera-talk-screen" aria-labelledby="sera-talk-title">
+      <button class="text-back" data-go="social-screen">← 交流へ戻る</button>
+      <div class="placeholder-symbol">◌</div><p class="screen-kicker">A TALK WITH SERA</p><h1 id="sera-talk-title">セラと話す</h1>
+      <p class="screen-description" id="sera-talk-copy">セラが薬棚の手入れをしながら、こちらに気づいて微笑んだ。</p>
+      <div class="town-menu social-menu" id="sera-talk-topics"></div>
+    </section>
+
+    <section class="game-screen placeholder-screen museum-screen" id="museum-screen" aria-labelledby="museum-title">
+      <button class="text-back" data-go="social-screen">← 交流へ戻る</button>
+      <div class="placeholder-symbol">▤</div><p class="screen-kicker">TOWN ARCHIVE</p><h1 id="museum-title">博物館</h1>
+      <p class="screen-description">館長の話を聞くか、キャラクターごとの収蔵品を見て回れます。</p>
+      <div class="museum-navigation" id="museum-navigation" aria-live="polite"></div>
+      <div class="museum-collection" id="museum-collection" role="tabpanel" aria-live="polite"></div>
+      <button class="secondary-button museum-back-button" id="museum-back">戻る</button>
+      <button class="secondary-button" data-go="social-screen">交流へ戻る</button>
     </section>
 
     <section class="game-screen combat-screen" id="combat-screen" aria-label="戦闘">
     <section class="arena" aria-label="戦闘">
       <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
       <div class="arena-caption"><span>STAGE 01</span><span class="caption-line"></span><span>灰の回廊</span></div>
-      <div class="enemy-side">
-        <div class="enemy-intent" id="enemy-intent"></div>
-        <div class="enemy-art" id="enemy-art" aria-hidden="true">
-          <div class="enemy-halo"></div><div class="enemy-shadow"></div>
-          <div class="enemy-cloak"></div><div class="enemy-body"></div>
-          <div class="enemy-head"></div><div class="enemy-hood"></div>
-          <div class="enemy-eye eye-left"></div><div class="enemy-eye eye-right"></div>
-          <div class="enemy-blade"></div>
-        </div>
-        <div class="enemy-info">
-          <div class="entity-name"><span class="entity-type">通常敵</span><h2 id="enemy-name">灰守り</h2></div>
-          <div class="health-row"><span class="health-label">HP</span><div class="health-track"><div class="health-fill enemy-health" id="enemy-health"></div></div><span class="health-value" id="enemy-hp">30 / 30</span></div>
-          <div class="enemy-status" id="enemy-status">古びた刃を構えている</div>
-        </div>
-      </div>
+      <div class="enemy-side"><div class="enemy-field" id="enemy-field" aria-label="敵"></div></div>
       <div class="battle-separator"><span>VS</span></div>
       <div class="player-side">
         <div class="player-art" aria-hidden="true"><div class="player-shadow"></div><div class="player-cape"></div><div class="player-body"></div><div class="player-head"></div><div class="player-hair"></div><div class="player-sword"></div></div>
         <div class="player-info">
           <div class="entity-name"><span class="entity-type">旅人</span><h2 id="player-name">灰路の剣士</h2></div>
           <div class="health-row"><span class="health-label">HP</span><div class="health-track"><div class="health-fill player-health" id="player-health"></div></div><span class="health-value" id="player-hp">50 / 50</span></div>
-          <div class="player-stats"><span>🛡 <b id="block-value">0</b></span><span class="stat-separator">·</span><span id="bat-count" hidden></span><span id="persistent-cards" hidden></span><span id="player-status-note">次の一撃を待つ</span></div>
+          <div class="player-stats"><span>🛡 <b id="block-value">0</b></span><span id="player-strength" class="player-strength" aria-live="polite" hidden></span><span class="stat-separator">·</span><span id="bat-count" hidden></span><span id="persistent-cards" hidden></span><span id="player-status-note">次の一撃を待つ</span></div>
         </div>
       </div>
       <div class="turn-banner" id="turn-banner" aria-live="polite"></div>
@@ -179,8 +228,10 @@
       <div class="pile pile-discard"><span class="pile-count" id="discard-count">0</span><span class="pile-label">捨て札</span><span class="pile-icon">▤</span></div>
     </section>
 
+    <section class="combat-items" id="combat-items" aria-label="所持アイテム" hidden></section>
+
     <section class="hand-area" aria-label="手札">
-      <div class="hand-heading"><span>あなたの手札</span><span class="hand-hint">カードを選んで使用</span></div>
+      <div class="hand-heading"><span>あなたの手札</span><span class="hand-hint" id="hand-hint">カードを選んで使用</span></div>
       <div class="hand" id="hand"></div>
       <div class="end-turn-wrap"><button class="end-turn-button" id="end-turn">ターン終了 <span>→</span></button></div>
     </section>
